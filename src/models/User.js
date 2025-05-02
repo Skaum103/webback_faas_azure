@@ -24,6 +24,16 @@ class User {
     return result.recordset[0];
   }
 
+  /** fetch one user by its username */
+  static async findByUsername(username) {
+      const pool   = await getPool();
+      const result = await pool
+        .request()
+        .input('username', sql.VarChar(100), username)
+        .query(`SELECT id, username, email, password FROM ${this.table} WHERE username = @username`);
+      return result.recordset[0];
+  }
+
   /** create a new user record */
   static async create({ username, email, password }) {
     const pool   = await getPool();

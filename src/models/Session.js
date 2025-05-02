@@ -7,21 +7,22 @@ class Session {
 
   /**
    * Create a new session
-   * @param {{ sessionId: string, userId: string, expiresAt: Date }} params
+   * @param {{ session_id: string, user_id: string, expires_at: Date }} params
    */
-  static async create({ sessionId, userId, expiresAt }) {
+  static async create({ session_id, user_id, expires_at }) {
     try {
       const pool = await getPool();
       const result = await pool
         .request()
-        .input('sessionId', sql.UniqueIdentifier, sessionId)
-        .input('userId',    sql.Int, userId)
-        .input('expiresAt', sql.DateTime2,       expiresAt)
+        .input('session_id', sql.UniqueIdentifier, session_id)
+        .input('user_id',    sql.Int, user_id)
+        .input('expires_at', sql.DateTime2,       expires_at)
         .query(`
           INSERT INTO ${this.table} (session_id, user_id, expires_at)
-          VALUES (@sessionId, @userId, @expiresAt);
+          OUTPUT inserted.session_id, inserted.user_id, inserted.expires_at
+          VALUES (@session_id, @user_id, @expires_at);
         `);
-      return result.rowsAffected[0] === 1;
+      return result.recordset[0];
     } catch (err) {
       console.error('[Session.create] SQL Error:', err);
       throw err;
@@ -30,34 +31,34 @@ class Session {
 
   /**
    * Fetch a session by its ID
-   * @param {string} sessionId
+   * @param {string} session_id
    * @returns {{ session_id: string, user_id: string, expires_at: Date }|undefined}
    */
-  static async findById(sessionId) {
+  static async findById(session_id) {
     const pool = await getPool();
     const result = await pool
       .request()
-      .input('sessionId', sql.UniqueIdentifier, sessionId)
+      .input('session_id', sql.UniqueIdentifier, session_id)
       .query(`
         SELECT session_id, user_id, expires_at
         FROM ${this.table}
-        WHERE session_id = @sessionId
+        WHERE session_id = @session_id
       `);
     return result.recordset[0];
   }
 
   /**
    * Delete a session by its ID
-   * @param {string} sessionId
+   * @param {string} session_id
    */
-  static async delete(sessionId) {
+  static async delete(session_id) {
     const pool = await getPool();
     const result = await pool
       .request()
-      .input('sessionId', sql.UniqueIdentifier, sessionId)
+      .input('session_id', sql.UniqueIdentifier, session_id)
       .query(`
         DELETE FROM ${this.table}
-        WHERE session_id = @sessionId
+        WHERE session_id = @session_id
       `);
     return result.rowsAffected[0] === 1;
   }

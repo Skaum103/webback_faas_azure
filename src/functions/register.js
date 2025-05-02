@@ -3,6 +3,7 @@ const User      = require('../models/User');
 const streamToJson = require('../utils/streamToJson');
 
 app.http('register', {
+    route: 'auth/register',
     methods: ['POST'],
     authLevel: 'anonymous',
     handler: async (req, context) => {
