@@ -45,7 +45,7 @@ app.http('register', {
     } catch (err: any) {
       context.log(`SQL Error during register: ${err}`);
       if (err.number === 2627) {
-        return { status: 409, body: 'A user with that email already exists.' };
+        return { status: 409, body: 'A user with that email/username already exists.' };
       }
       return { status: 500, body: 'Internal server error' };
     }
