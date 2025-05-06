@@ -2,20 +2,29 @@
   "name": "",
   "version": "1.0.0",
   "description": "",
-  "main": "src/functions/*.js",
+  "main": "dist/src/{index.js,functions/*.js}",
   "scripts": {
-    "start": "func start",
-    "test": "echo \"No tests yet...\""
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc && npm run copy:json && npm run flatten:functions",
+    "copy:json": "copyfiles -u 2 \"src/functions/**/*.json\" dist && copyfiles host.json local.settings.json dist",
+    "flatten:functions": "copyfiles -u 1 \"dist/functions/*\" dist",
+    "start": "npm run build && func start --script-root dist",
+    "dev": "func start --script-root src"
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
     "@azure/identity": "^4.9.1",
+    "@types/mssql": "^9.1.7",
+    "@types/node": "^22.15.8",
     "mssql": "^11.0.1",
     "sequelize": "^6.37.7",
     "tedious": "^18.6.1",
+    "typescript": "^5.8.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^4.x"
+    "azure-functions-core-tools": "^4.x",
+    "rimraf":          "^4.0.0",
+    "copyfiles":       "^2.4.1"
   }
 }
