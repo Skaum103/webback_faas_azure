@@ -9,7 +9,8 @@
     "copy:json": "copyfiles -u 2 \"src/functions/**/*.json\" dist && copyfiles host.json local.settings.json dist",
     "flatten:functions": "copyfiles -u 1 \"dist/functions/*\" dist",
     "start": "npm run build && func start --script-root dist",
-    "dev": "func start --script-root src"
+    "dev": "func start --script-root src",
+    "deploy": "func azure functionapp publish web-back-function-app"
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
