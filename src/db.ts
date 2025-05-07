@@ -33,13 +33,13 @@ export function getPool(): Promise<ConnectionPool> {
     pool = new ConnectionPool(config)
       .connect()
       .then(p => {
-        console.log('✔️ Connected to Azure SQL');
+        console.log('Connected to Azure SQL');
         return p;
       })
       .catch(err => {
         // reset pool on failure so we can retry on next invocation
         pool = null;
-        console.error('❌ SQL Connection Failed:', err);
+        console.error('SQL Connection Failed:', err);
         throw err;
       });
   }

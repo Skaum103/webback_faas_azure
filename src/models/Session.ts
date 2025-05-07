@@ -2,6 +2,7 @@
 
 import { getPool } from '../db';
 import * as sql from 'mssql';
+import { v4 as uuid } from 'uuid';
 
 /**
  * Represents a row in the Sessions table.
@@ -25,11 +26,11 @@ export class Session {
    * @returns The inserted session record
    */
   public static async create(params: {
-    session_id: string;
     user_id:    number;
     expires_at: Date;
   }): Promise<SessionRecord> {
-    const { session_id, user_id, expires_at } = params;
+    const { user_id, expires_at } = params;
+    const session_id = uuid()
     try {
       const pool = await getPool();
       const result: sql.IResult<SessionRecord> = await pool.request()
@@ -49,28 +50,82 @@ export class Session {
   }
 
   /**
-   * Fetch a session by its ID.
-   * @param session_id - GUID of the session
-   * @returns The session record or undefined if not found
+   * Create a new session record with expire date of 3 days.
+   * @param params - session_id, user_id, and expires_at
+   * @returns The inserted session record
    */
-  public static async findById(
+  public static async create_3days(params: {
+      user_id:    number;
+    }): Promise<SessionRecord> {
+      const expires_at = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+      const user_id = params.user_id
+      const session_id = uuid()
+      try {
+        const pool = await getPool();
+        const result: sql.IResult<SessionRecord> = await pool.request()
+          .input('session_id', sql.UniqueIdentifier, session_id)
+          .input('user_id',    sql.Int,            user_id)
+          .input('expires_at', sql.DateTime2,      expires_at)
+          .query(
+            `INSERT INTO ${this.table} (session_id, user_id, expires_at)
+             OUTPUT inserted.session_id, inserted.user_id, inserted.expires_at
+             VALUES (@session_id, @user_id, @expires_at);`
+          );
+        return result.recordset[0];
+      } catch (err) {
+        console.error('[Session.create] SQL Error:', err);
+        throw err;
+      }
+  }
+
+  /**
+   * Validate a session by its ID.
+   * @param session_id - GUID of the session
+   * @returns A boolean to indeicate the result
+   */
+  public static async validateSession(
     session_id: string
-  ): Promise<SessionRecord | undefined> {
+  ): Promise<boolean> {
     try {
+      const time = Date.now()
       const pool = await getPool();
       const result: sql.IResult<SessionRecord> = await pool.request()
         .input('session_id', sql.UniqueIdentifier, session_id)
         .query(
           `SELECT session_id, user_id, expires_at
            FROM ${this.table}
-           WHERE session_id = @session_id;`
+           WHERE session_id = @session_id AND expires_at > time;`
         );
-      return result.recordset[0];
+      return result.recordset.length === 1;
     } catch (err) {
-      console.error('[Session.findById] SQL Error:', err);
+      console.error('[Session.validateSession] SQL Error:', err);
       throw err;
     }
   }
+
+    /**
+   * Validate a session by its ID.
+   * @param session_id - GUID of the session
+   * @returns The session record or undefined if not found
+   */
+    public static async findById(
+      session_id: string
+    ): Promise<SessionRecord | undefined> {
+      try {
+        const pool = await getPool();
+        const result: sql.IResult<SessionRecord> = await pool.request()
+          .input('session_id', sql.UniqueIdentifier, session_id)
+          .query(
+            `SELECT session_id, user_id, expires_at
+             FROM ${this.table}
+             WHERE session_id = @session_id AND;`
+          );
+        return result.recordset[0];
+      } catch (err) {
+        console.error('[Session.findById] SQL Error:', err);
+        throw err;
+      }
+    }
 
   /**
    * Delete a session by its ID.
