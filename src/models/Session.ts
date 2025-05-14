@@ -95,7 +95,7 @@ export class Session {
         .query(
           `SELECT session_id, user_id, expires_at
            FROM ${this.table}
-           WHERE session_id = @session_id AND user_id = @user_id expires_at > time;`
+           WHERE session_id = @session_id AND user_id = @user_id AND expires_at > time;`
         );
       return result.recordset.length === 1;
     } catch (err) {
