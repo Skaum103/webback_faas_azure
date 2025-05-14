@@ -1,8 +1,8 @@
 // src/functions/postGet.ts
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getContainerClient } from "../blobService";
-import { PostRecord } from '../models/Post';
+import { getContainerClient } from "../../lib/blobService";
+import { PostRecord } from '../../models/Post';
 
 export async function postGetTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const id = request.params.id;

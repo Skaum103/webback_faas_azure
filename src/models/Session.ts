@@ -1,6 +1,6 @@
 // src/models/Session.ts
 
-import { getPool } from '../db';
+import { getPool } from '../lib/db';
 import * as sql from 'mssql';
 import { v4 as uuid } from 'uuid';
 

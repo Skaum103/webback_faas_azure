@@ -1,6 +1,6 @@
 // src/functions/postDelete.ts
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { getContainerClient } from "../blobService";
+import { getContainerClient } from "../../lib/blobService";
 
 export async function postDeleteTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   const id = request.params.id;

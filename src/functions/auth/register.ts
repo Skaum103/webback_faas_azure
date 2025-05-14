@@ -1,5 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
-import { User, UserRecord } from '../models/User';
+import { User, UserRecord } from '../../models/User';
 
 
 /**

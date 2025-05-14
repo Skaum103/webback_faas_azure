@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
-import { User, UserRecord } from '../models/User';
-import { Session } from '../models/Session';
+import { User, UserRecord } from '../../models/User';
+import { Session } from '../../models/Session';
 
 
 /**

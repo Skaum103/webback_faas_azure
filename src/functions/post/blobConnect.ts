@@ -1,6 +1,6 @@
 // src/checkBlobConnection.ts
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { getContainerClient } from "../blobService";
+import { getContainerClient } from "../../lib/blobService";
 
 export async function checkBlobConnection(
   request: HttpRequest,

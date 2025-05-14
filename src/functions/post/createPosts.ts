@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
-import { getContainerClient } from '../blobService';
-import { PostRecord } from '../models/Post';
+import { getContainerClient } from '../../lib/blobService';
+import { PostRecord } from '../../models/Post';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function createPostTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {

@@ -2,7 +2,7 @@
   "name": "",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/src/{index.js,functions/*.js}",
+  "main": "dist/src/{index.js,functions/**/*.js}",
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc && npm run copy:json && npm run flatten:functions",

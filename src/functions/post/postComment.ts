@@ -1,8 +1,8 @@
 // src/functions/postComment.ts
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getContainerClient } from "../blobService";
-import { PostRecord, Comment  } from '../models/Post';
+import { getContainerClient } from "../../lib/blobService";
+import { PostRecord, Comment  } from '../../models/Post';
 
 export async function postCommentTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const id = request.params.id;

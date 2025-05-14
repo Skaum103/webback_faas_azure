@@ -1,6 +1,6 @@
 // src/models/User.ts
 
-import { getPool } from '../db';
+import { getPool } from '../lib/db';
 import * as sql from 'mssql';
 
 /**

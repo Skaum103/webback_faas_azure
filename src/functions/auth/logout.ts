@@ -1,5 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
-import { Session } from '../models/Session';
+import { Session } from '../../models/Session';
 
 
 /**
