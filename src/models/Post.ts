@@ -1,14 +1,16 @@
+import { UserPartial } from "./User";
+
 export interface Comment {
-    user: string;
+    user: UserPartial;
     content: string;
-    time: string; // ISO string
   }
   
   export interface PostRecord {
     id: string;
     title: string;
-    author: string;
+    user: UserPartial;
     content: string;
     comments: Comment[];
+    topics: string[]
   }
   

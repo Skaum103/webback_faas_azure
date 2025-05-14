@@ -44,7 +44,10 @@ export async function loginTrigger(request: HttpRequest, context: InvocationCont
     return {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: session.session_id })
+      body: JSON.stringify({ 
+        session_id: session.session_id,
+        user_id: user.id
+      })
     };
   } catch (err) {
     context.log(`Invalid JSON body: ${err}`);

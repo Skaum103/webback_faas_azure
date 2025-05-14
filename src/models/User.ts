@@ -3,6 +3,12 @@
 import { getPool } from '../lib/db';
 import * as sql from 'mssql';
 
+
+export interface UserPartial {
+  id:        number;
+  username:  string;
+}
+
 /**
  * Represents a row in the Users table.
  */

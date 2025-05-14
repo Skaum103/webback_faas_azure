@@ -84,7 +84,8 @@ export class Session {
    * @returns A boolean to indeicate the result
    */
   public static async validateSession(
-    session_id: string
+    session_id: string,
+    user_id: string
   ): Promise<boolean> {
     try {
       const time = Date.now()
@@ -94,7 +95,7 @@ export class Session {
         .query(
           `SELECT session_id, user_id, expires_at
            FROM ${this.table}
-           WHERE session_id = @session_id AND expires_at > time;`
+           WHERE session_id = @session_id AND user_id = @user_id expires_at > time;`
         );
       return result.recordset.length === 1;
     } catch (err) {
