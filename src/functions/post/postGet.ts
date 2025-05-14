@@ -25,7 +25,7 @@ export async function postGetTrigger(request: HttpRequest, context: InvocationCo
   
   app.http("postGet", {
     route: "posts/id/{id}",
-    methods: ["GET"],
+    methods: ["POST"],
     authLevel: "anonymous",
     handler: postGetTrigger,
   });

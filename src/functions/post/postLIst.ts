@@ -24,7 +24,7 @@ export async function postListTrigger(_: HttpRequest, context: InvocationContext
   
   app.http("postList", {
     route: "posts",
-    methods: ["GET"],
+    methods: ["POST"],
     authLevel: "anonymous",
     handler: postListTrigger,
   });
