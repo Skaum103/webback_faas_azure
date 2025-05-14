@@ -85,17 +85,19 @@ export class Session {
    */
   public static async validateSession(
     session_id: string,
-    user_id: string
+    user_id: number
   ): Promise<boolean> {
     try {
-      const time = Date.now()
+      const now = new Date();
       const pool = await getPool();
       const result: sql.IResult<SessionRecord> = await pool.request()
         .input('session_id', sql.UniqueIdentifier, session_id)
+        .input('user_id', sql.Int, user_id)
+        .input('current_time', sql.DateTime2, now)
         .query(
           `SELECT session_id, user_id, expires_at
            FROM ${this.table}
-           WHERE session_id = @session_id AND user_id = @user_id AND expires_at > time;`
+           WHERE session_id = @session_id AND user_id = @user_id AND expires_at > @current_time;;`
         );
       return result.recordset.length === 1;
     } catch (err) {

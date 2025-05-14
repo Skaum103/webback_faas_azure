@@ -1,11 +1,6 @@
-// src/models/Session.ts
-
 import { getPool } from '../lib/db';
 import * as sql from 'mssql';
 
-export interface SubscriptionRecords {
-    subscriptions: string[];
-}
 
 export interface Subscription {
     id: number;
@@ -15,15 +10,14 @@ export interface Subscription {
 
 export class Subscription{
 /** The database table name */
-static table = 'Sessions';
+static table = 'Subscription';
 
     /**
      * Create a new subscription record.
      * @param params - Subscription Record, contains topic and user_id
      * @returns The inserted Subscription record
     */
-    public static async create(params: {subscription: Subscription}): Promise<boolean> {
-        const { subscription } = params;
+    public static async saveSubscription(subscription: Subscription): Promise<boolean> {
         try {
             const pool = await getPool();
             const result: sql.IResult<Subscription> = await pool.request()
@@ -41,17 +35,50 @@ static table = 'Sessions';
         }
     }
 
+    /**
+     * Save subscriptions in batch.
+     * @param user_id - id of the user
+     * @param topics - List of topics to be added
+     * @returns Number of rows inserted
+     */
+    public static async saveSubscriptions(user_id: number, topics: string[]): Promise<number> {
+        try {
+            const pool = await getPool();
+            
+            // Create a list of topic-value pairs for insertion
+            const topicsParam = topics.map((topic, index) => `(@user_id, @topic${index})`).join(', ');
+
+            // Prepare query with dynamic inputs for each topic
+            const request = pool.request().input('user_id', sql.Int, user_id);
+
+            // Add dynamic inputs for each topic in the list
+            topics.forEach((topic, index) => {
+                request.input(`topic${index}`, sql.NVarChar, topic);
+            });
+
+            const query = `
+                INSERT INTO ${this.table} (user_id, topic)
+                VALUES ${topicsParam};
+            `;
+
+            const result: sql.IResult<any> = await request.query(query);
+            return result.rowsAffected[0];  // Return number of rows inserted
+        } catch (err) {
+            console.error('[Subscription.saveSubscriptions] SQL Error:', err.message);
+            throw new Error('Failed to save subscriptions.');
+        }
+    }
 
     /**
      * Find the subscriptions of a user
      * @param user_id - GUID of the user
      * @returns Array of subscription topics or empty array if not found
      */
-    public static async findSubscriptions(user_id: string): Promise<string[]> {
+    public static async findSubscriptions(user_id: number): Promise<string[]> {
         try {
             const pool = await getPool();
             const result = await pool.request()
-                .input('user_id', sql.UniqueIdentifier, user_id)
+                .input('user_id', sql.Int, user_id)
                 .query(
                     `SELECT topic
                     FROM ${this.table}
@@ -71,19 +98,31 @@ static table = 'Sessions';
      * @param topics - the topics to be removed
      * @returns True if one row was deleted
      */
-    public static async deleteSubscriptions(user_id: string, topics: string[]): Promise<boolean> {
+    public static async deleteSubscriptions(user_id: number, topics: string[]): Promise<number> {
         try {
             const pool = await getPool();
-            const result: sql.IResult<any> = await pool.request()
-                .input('user_id', sql.UniqueIdentifier, user_id)
-                .input('topics', sql.VarChar(100), topics.join(','))
-                .query(`
-                    DELETE FROM ${this.table}
-                    WHERE user_id = @user_id
-                    AND topic IN (@topics);
-                `);
+                
+            /// Create placeholders for each topic dynamically (e.g., @topic0, @topic1)
+            const topicsParam = topics.map((_, index) => `@topic${index}`).join(', ');
 
-            return result.rowsAffected[0] > 0;
+            // Prepare the query with the dynamically created placeholders
+            let query = `
+                DELETE FROM ${this.table}
+                WHERE user_id = @user_id
+                AND topic IN (${topicsParam});
+            `;
+            
+            // Prepare the request and add user_id as a parameter
+            const request = pool.request().input('user_id', sql.Int, user_id);
+
+            // Add each topic as a parameter (e.g., @topic0, @topic1, etc.)
+            topics.forEach((topic, index) => {
+                request.input(`topic${index}`, sql.NVarChar, topic);
+            });
+
+            // Execute the query
+            const result = await request.query(query);
+            return result.rowsAffected[0];  // Return number of rows inserted
         } catch (err) {
             console.error('[Subscription.deleteSubscriptions] SQL Error:', err.message);
             throw new Error('Failed to delete subscriptions.');
