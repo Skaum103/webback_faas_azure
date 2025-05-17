@@ -54,3 +54,10 @@ export async function postCommentTrigger(request: HttpRequest, context: Invocati
     authLevel: "anonymous",
     handler: postCommentTrigger,
   });
+
+
+// 1. Parse Json payload & verify session
+
+// 2. Update the post Json file in blob
+
+// 3. Create Azure Event Gird events according to the topic of the post

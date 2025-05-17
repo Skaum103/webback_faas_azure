@@ -29,3 +29,11 @@ export async function postGetTrigger(request: HttpRequest, context: InvocationCo
     authLevel: "anonymous",
     handler: postGetTrigger,
   });
+
+
+// 1. Parse Json payload & verify session
+
+// 2. Get the Azure Event Gird events, filtered by topic & timestamp. Get the Json file
+// names from the events.
+
+// 3. Retrieve Blob share links, return. OR Retrieve Blob Json files, return.

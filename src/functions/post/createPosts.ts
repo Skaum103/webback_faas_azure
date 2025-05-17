@@ -61,3 +61,10 @@ app.http('createPost', {
   authLevel: 'anonymous',
   handler: createPostTrigger
 });
+
+
+// 1. Parse Json payload & verify session
+
+// 2. Upload the post Json file to blob
+
+// 3. Create Azure Event Gird events according to the topic of the post
